@@ -2,7 +2,8 @@
 #include "Collision.h"
 #include <iostream>
 #include "UIButton.h"
-#include <vector>
+#include <vector> 
+#include <fstream>
 
 using namespace std;
 
@@ -53,21 +54,48 @@ int main()
 	menu.setSize(Vector2f(1000, 107));
 	menu.setFillColor(Color::Black);
 
+	ofstream file("level.lvl");
+
 	vector<Sprite> deleted;
 
 	RenderWindow window(VideoMode(1000, 600), "Level Editor");
-
+	
 
 	while(window.isOpen())
 	{
 		Event event;
 		while(window.pollEvent(event))
 		{
+			if(event.type == Event::MouseWheelMoved)
+			{
+					current.rotate(event.mouseWheel.delta);
+			}
 			if (event.type == Event::Closed)window.close();
 
 			if(event.type == Event::KeyPressed)
 			{
 				if (event.key.control) {
+
+					if(event.key.code == Keyboard::S)
+					{
+						for (int i = 0; i < level.size(); i++)
+						{
+							if (level[i].getTexture() == tree.getTexture())file << "T" << endl;
+							if (level[i].getTexture() == house.getTexture())file << "H" << endl;
+							if (level[i].getTexture() == road.getTexture())file << "R" << endl;
+							if (level[i].getTexture() == earth.getTexture())file << "E" << endl; 
+							if (level[i].getTexture() == grass.getTexture())file << "G" << endl;
+							if (level[i].getTexture() == pyramid.getTexture())file << "P" << endl;
+							if (level[i].getTexture() == sun.getTexture())file << "S" << endl;
+							if (level[i].getTexture() == cloud.getTexture())file << "C" << endl;
+							if (level[i].getTexture() == fence.getTexture())file << "F" << endl;
+
+							file << level[i].getPosition().x << endl << level[i].getPosition().y << endl;
+
+						
+						}
+						file.close();
+					}
 					if (event.key.code == Keyboard::Z && level.size() > 0)
 					{
 						deleted.push_back(level[level.size() - 1]);
