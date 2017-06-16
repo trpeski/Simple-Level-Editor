@@ -2,16 +2,24 @@
 #include "Collision.h"
 #include <iostream>
 #include "UIButton.h"
-#include <vector> 
+#include <vector>  
 #include <fstream>
+#include <algorithm>
+#include <string>
+#include <sstream>
+
 
 using namespace std;
 
 int main()
 {
+	
+
+	Text objname;
+	Text numofobjs;
 	Sprite current;
 	vector<Sprite> level;
-	Texture tcloud ,troad, tearth, thouse, tgrass, tfence, ttree, tsun, mtsun, tpyramid;
+	Texture tcloud ,troad, tearth, thouse, tgrass, tfence, ttree, tsun, mtsun, tpyramid, twatter, mtwatter;
 	tgrass.loadFromFile("data/grass.png");
 	tearth.loadFromFile("data/earth.png");
 	troad.loadFromFile("data/road.png");
@@ -22,6 +30,8 @@ int main()
 	tsun.loadFromFile("data/sun.png");
 	mtsun.loadFromFile("data/sun.png" , IntRect(10,10,90,90));
 	tpyramid.loadFromFile("data/pyramid.png");
+	twatter.loadFromFile("data/watter.png");
+	mtwatter.loadFromFile("data/watter.png", IntRect(4, 3, 30, 30));
 	Sprite grass(tgrass);
 	Sprite earth(tearth);
 	Sprite road(troad);
@@ -32,6 +42,8 @@ int main()
 	Sprite sun(tsun);
 	Sprite msun(mtsun);
 	Sprite pyramid(tpyramid);
+	Sprite watter(twatter);
+	Sprite mwatter(mtwatter);
 	grass.setPosition(6,12);
 	earth.setPosition(34,2);
 	road.setPosition(67,12);
@@ -41,6 +53,7 @@ int main()
 	tree.setPosition(372, 4);
 	msun.setPosition(442, 5);
 	pyramid.setPosition(543, 15);
+	mwatter.setPosition(4, 37);
 	UIButton bgrass(30, grass, 2, 2);
 	UIButton bearth(30, earth, 34, 2);
 	UIButton broad(31, road, 66, 2);
@@ -50,15 +63,52 @@ int main()
 	UIButton btree(70, tree, 363, 2);
 	UIButton bsun(100, msun, 436, 2);
 	UIButton bpyramid(102, pyramid, 540, 2);
+	UIButton bwatter(35, mwatter, 2, 35);
 	RectangleShape menu;
 	menu.setSize(Vector2f(1000, 107));
 	menu.setFillColor(Color::Black);
+	Font textf;
+	textf.loadFromFile("data/ariblk.ttf");
+	objname.setFont(textf);
+	objname.setCharacterSize(12);
+	objname.setPosition(0, 580);
+	objname.setFillColor(Color::Black); 
+	numofobjs.setFont(textf);
+	numofobjs.setCharacterSize(12);
+	numofobjs.setPosition(60, 580);
+	numofobjs.setFillColor(Color::Black);
 
-	ofstream file("level.lvl");
+
+	fstream filee("level.lvl" , ios::ios_base::in);
 
 	vector<Sprite> deleted;
+	
+	int in;
+	int in2;
+	while(filee >> in)
+	{
+		Sprite *n;
+		if(in == 1)Sprite *n = new Sprite(tree);
+		else if (in == 2)n = new Sprite(house);
+		else if (in == 3)n = new Sprite(road);
+		else if (in == 4)n = new Sprite(earth);
+		else if (in == 5)n = new Sprite(grass);
+		else if (in == 6)n = new Sprite(pyramid);
+		else if (in == 7)n = new Sprite(sun);
+		else if (in == 8)n = new Sprite(cloud);
+		else if (in == 9)n = new Sprite(fence);
+		else if (in == 10)n = new Sprite(watter);
+		filee >> in;
+		filee >> in2;
+		n->setPosition(in, in2);
+		level.push_back(*n);
+	}
+
+	filee.close();
 
 	RenderWindow window(VideoMode(1000, 600), "Level Editor");
+	ofstream file("level.lvl", ios::ios_base::out);
+	  
 	
 
 	while(window.isOpen())
@@ -80,15 +130,16 @@ int main()
 					{
 						for (int i = 0; i < level.size(); i++)
 						{
-							if (level[i].getTexture() == tree.getTexture())file << "T" << endl;
-							if (level[i].getTexture() == house.getTexture())file << "H" << endl;
-							if (level[i].getTexture() == road.getTexture())file << "R" << endl;
-							if (level[i].getTexture() == earth.getTexture())file << "E" << endl; 
-							if (level[i].getTexture() == grass.getTexture())file << "G" << endl;
-							if (level[i].getTexture() == pyramid.getTexture())file << "P" << endl;
-							if (level[i].getTexture() == sun.getTexture())file << "S" << endl;
-							if (level[i].getTexture() == cloud.getTexture())file << "C" << endl;
-							if (level[i].getTexture() == fence.getTexture())file << "F" << endl;
+							if (level[i].getTexture() == tree.getTexture())file << 1 << endl;
+							else if (level[i].getTexture() == house.getTexture())file << 2 << endl;
+							else if (level[i].getTexture() == road.getTexture())file << 3 << endl;
+							else if (level[i].getTexture() == earth.getTexture())file << 4 << endl; 
+							else if (level[i].getTexture() == grass.getTexture())file << 5 << endl;
+							else if (level[i].getTexture() == pyramid.getTexture())file << 6 << endl;
+							else if (level[i].getTexture() == sun.getTexture())file << 7 << endl;
+							else if (level[i].getTexture() == cloud.getTexture())file << 8 << endl;
+							else if (level[i].getTexture() == fence.getTexture())file << 9 << endl;
+							else if (level[i].getTexture() == watter.getTexture())file << 10 << endl;
 
 							file << level[i].getPosition().x << endl << level[i].getPosition().y << endl;
 
@@ -135,38 +186,52 @@ int main()
 					if (MContact(bgrass.obj())) 
 					{
 						current = grass;
+						objname.setString("grass");
 					}
 					else if (MContact(bearth.obj()))
 					{
 						current = earth;
+						objname.setString("earth");
 					}
 					else if (MContact(broad.obj()))
 					{
 						current = road;
+						objname.setString("road");
 					}
 					else if (MContact(bhouse.obj()))
 					{
-						current = house; 
+						current = house;
+						objname.setString("house");
 					}
 					else if (MContact(bfence.obj()))
 					{
 						current = fence;
+						objname.setString("fence");
 					}
 					else if (MContact(bcloud.obj()))
 					{
 						current = cloud;
+						objname.setString("cloud");
 					}
 					else if (MContact(btree.obj()))
 					{
 						current = tree;
+						objname.setString("tree");
 					}
 					else if (MContact(bsun.obj()))
 					{
 						current = sun;
+						objname.setString("sun");
 					}
 					else if (MContact(bpyramid.obj()))
 					{
 						current = pyramid;
+						objname.setString("pyramid");
+					}
+					else if (MContact(bwatter.obj()))
+					{
+						current = watter;
+						objname.setString("watter");
 					}
 					else
 					{
@@ -177,13 +242,18 @@ int main()
 					
 					
 				}
-			}
-		}
+			} 
+		
 
+		}
+		ostringstream num;
+		num << level.size();
+		numofobjs.setString(num.str().c_str()); 
 		current.setPosition(Mouse::getPosition(window).x - 10, Mouse::getPosition(window).y - 10);
 		window.clear(Color(0,162,232));
 		for (int i = 0; i < level.size(); i++)window.draw(level[i]);
 		window.draw(menu);
+		bwatter.draw(window);
 		btree.draw(window);
 		bpyramid.draw(window);
 		bearth.draw(window);
@@ -194,6 +264,8 @@ int main()
 		bhouse.draw(window);
 		bsun.draw(window);
 		window.draw(current);
+		window.draw(objname);
+		window.draw(numofobjs);
 		window.display();
 		
 	}
