@@ -1,4 +1,4 @@
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup") 
 #include "Collision.h"
 #include <iostream>
 #include "UIButton.h"
@@ -8,7 +8,6 @@
 #include <string>
 #include <sstream>
 
-
 using namespace std;
 
 int main()
@@ -17,6 +16,7 @@ int main()
 
 	Text objname;
 	Text numofobjs;
+	Text saving;
 	Sprite current;
 	vector<Sprite> level;
 	Texture tcloud ,troad, tearth, thouse, tgrass, tfence, ttree, tsun, mtsun, tpyramid, twatter, mtwatter;
@@ -73,11 +73,21 @@ int main()
 	objname.setCharacterSize(12);
 	objname.setPosition(0, 580);
 	objname.setFillColor(Color::Black); 
+	saving.setFont(textf);
+	saving.setPosition(70,580);
+	saving.setFillColor(Color::Black);
+	saving.setString("saving...");
+	saving.setCharacterSize(12);
 	numofobjs.setFont(textf);
 	numofobjs.setCharacterSize(12);
 	numofobjs.setPosition(60, 580);
 	numofobjs.setFillColor(Color::Black);
-
+	Text close(numofobjs);
+	close.setString("you have not saved your work! sure you want to close the editor");
+	close.setPosition(90,580);
+	RectangleShape info(Vector2f(1000,18));
+	info.setPosition(0,582);
+	
 
 	fstream filee("level.lvl" , ios::ios_base::in);
 
@@ -85,10 +95,11 @@ int main()
 	
 	int in;
 	int in2;
+	int in3;
 	while(filee >> in)
 	{
 		Sprite *n;
-		if(in == 1)Sprite *n = new Sprite(tree);
+		if(in == 1)n = new Sprite(tree);
 		else if (in == 2)n = new Sprite(house);
 		else if (in == 3)n = new Sprite(road);
 		else if (in == 4)n = new Sprite(earth);
@@ -100,7 +111,9 @@ int main()
 		else if (in == 10)n = new Sprite(watter);
 		filee >> in;
 		filee >> in2;
+		filee >> in3;
 		n->setPosition(in, in2);
+		n->setRotation(in3);
 		level.push_back(*n);
 	}
 
@@ -109,10 +122,12 @@ int main()
 	RenderWindow window(VideoMode(1000, 600), "Level Editor");
 	ofstream file("level.lvl", ios::ios_base::out);
 	  
-	
+	bool save; 
+	bool cl_str = false;
 
 	while(window.isOpen())
 	{
+		save = false;
 		Event event;
 		while(window.pollEvent(event))
 		{
@@ -120,14 +135,19 @@ int main()
 			{
 					current.rotate(event.mouseWheel.delta);
 			}
-			if (event.type == Event::Closed)window.close();
-
+			if (event.type == Event::Closed) 
+			{ 
+				if (cl_str)window.close();
+				cl_str = true;
+			}
 			if(event.type == Event::KeyPressed)
 			{
 				if (event.key.control) {
 
 					if(event.key.code == Keyboard::S)
 					{
+						cl_str = false;
+						save = true;
 						for (int i = 0; i < level.size(); i++)
 						{
 							if (level[i].getTexture() == tree.getTexture())file << 1 << endl;
@@ -142,6 +162,7 @@ int main()
 							else if (level[i].getTexture() == watter.getTexture())file << 10 << endl;
 
 							file << level[i].getPosition().x << endl << level[i].getPosition().y << endl;
+							file << level[i].getRotation() << endl;
 
 						
 						}
@@ -150,7 +171,7 @@ int main()
 					if (event.key.code == Keyboard::Z && level.size() > 0)
 					{
 						deleted.push_back(level[level.size() - 1]);
-						level.pop_back();
+						level.pop_back(); 
 					}
 					else if (event.key.code == Keyboard::N && deleted.size() > 0)
 					{
@@ -264,8 +285,11 @@ int main()
 		bhouse.draw(window);
 		bsun.draw(window);
 		window.draw(current);
+		window.draw(info);
 		window.draw(objname);
 		window.draw(numofobjs);
+		if (cl_str)window.draw(close);
+		if (save)window.draw(saving);
 		window.display();
 		
 	}
