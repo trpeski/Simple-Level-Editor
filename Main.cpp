@@ -202,6 +202,17 @@ int main()
 			
 			if(event.type == Event::MouseButtonPressed)
 			{
+				if(Mouse::isButtonPressed(Mouse::Right))
+				{
+					Sprite* s = new Sprite(current);
+					s->setPosition(Mouse::getPosition(window).x - 10, Mouse::getPosition(window).y - 10);
+					level.push_back(*s);
+					Mouse::setPosition(Vector2i(Mouse::getPosition().x - 20, Mouse::getPosition().y));
+					if(current.getTexture() == tree.getTexture())
+						Mouse::setPosition(Vector2i(Mouse::getPosition().x - 40, Mouse::getPosition().y));
+					if(current.getTexture() == cloud.getTexture())
+						Mouse::setPosition(Vector2i(Mouse::getPosition().x - 50, Mouse::getPosition().y - 12));
+				}
 				if(Mouse::isButtonPressed(Mouse::Left))
 				{
 					if (MContact(bgrass.obj())) 
@@ -259,6 +270,12 @@ int main()
 						Sprite* s = new Sprite(current);
 						s->setPosition(Mouse::getPosition(window).x - 10, Mouse::getPosition(window).y - 10);
 						level.push_back(*s);
+						Mouse::setPosition(Vector2i(Mouse::getPosition().x + 20, Mouse::getPosition().y));
+						if (current.getTexture() == tree.getTexture())
+							Mouse::setPosition(Vector2i(Mouse::getPosition().x + 40, Mouse::getPosition().y));
+						if (current.getTexture() == cloud.getTexture())
+							Mouse::setPosition(Vector2i(Mouse::getPosition().x + 50, Mouse::getPosition().y + 12));
+
 					}
 					
 					
