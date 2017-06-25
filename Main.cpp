@@ -91,6 +91,10 @@ int main()
 
 	fstream filee("level.lvl" , ios::ios_base::in);
 
+	CircleShape dot(4);
+	dot.setPointCount(5);
+	dot.setFillColor(Color::Cyan);
+
 	vector<Sprite> deleted;
 	
 	int in;
@@ -120,6 +124,7 @@ int main()
 	filee.close();
 
 	RenderWindow window(VideoMode(1000, 600), "Level Editor");
+	window.setMouseCursorVisible(false);
 	ofstream file("level.lvl", ios::ios_base::out);
 	  
 	bool save; 
@@ -142,11 +147,12 @@ int main()
 			}
 			if(event.type == Event::KeyPressed)
 			{
+				
 				if (event.key.control) {
 
 					if(event.key.code == Keyboard::S)
 					{
-						cl_str = false;
+						
 						save = true;
 						for (int i = 0; i < level.size(); i++)
 						{
@@ -163,7 +169,7 @@ int main()
 
 							file << level[i].getPosition().x << endl << level[i].getPosition().y << endl;
 							file << level[i].getRotation() << endl;
-
+							
 						
 						}
 						file.close();
@@ -175,11 +181,12 @@ int main()
 					}
 					else if (event.key.code == Keyboard::N && deleted.size() > 0)
 					{
-						level.push_back(deleted[deleted.size() - 1]);
+						level.push_back(deleted[deleted.size() - 1]); 
 						deleted.pop_back();
 					}
 					else if (event.key.code == Keyboard::C)
 					{
+						while(level.size() != 0)
 						for(int i = 0; i < level.size(); i++)
 						{
 							deleted.push_back(level[level.size() - 1]);
@@ -202,16 +209,20 @@ int main()
 			
 			if(event.type == Event::MouseButtonPressed)
 			{
+			
 				if(Mouse::isButtonPressed(Mouse::Right))
 				{
 					Sprite* s = new Sprite(current);
 					s->setPosition(Mouse::getPosition(window).x - 10, Mouse::getPosition(window).y - 10);
-					level.push_back(*s);
-					Mouse::setPosition(Vector2i(Mouse::getPosition().x - 20, Mouse::getPosition().y));
-					if(current.getTexture() == tree.getTexture())
-						Mouse::setPosition(Vector2i(Mouse::getPosition().x - 40, Mouse::getPosition().y));
-					if(current.getTexture() == cloud.getTexture())
-						Mouse::setPosition(Vector2i(Mouse::getPosition().x - 50, Mouse::getPosition().y - 12));
+					level.push_back(*s); 
+					if (!menu.getGlobalBounds().contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y)) {
+
+						Mouse::setPosition(Vector2i(Mouse::getPosition().x - 20, Mouse::getPosition().y));
+						if (current.getTexture() == tree.getTexture())
+							Mouse::setPosition(Vector2i(Mouse::getPosition().x - 40, Mouse::getPosition().y));
+						if (current.getTexture() == cloud.getTexture())
+							Mouse::setPosition(Vector2i(Mouse::getPosition().x - 50, Mouse::getPosition().y - 12));
+					}
 				}
 				if(Mouse::isButtonPressed(Mouse::Left))
 				{
@@ -270,19 +281,22 @@ int main()
 						Sprite* s = new Sprite(current);
 						s->setPosition(Mouse::getPosition(window).x - 10, Mouse::getPosition(window).y - 10);
 						level.push_back(*s);
-						Mouse::setPosition(Vector2i(Mouse::getPosition().x + 20, Mouse::getPosition().y));
-						if (current.getTexture() == tree.getTexture())
-							Mouse::setPosition(Vector2i(Mouse::getPosition().x + 40, Mouse::getPosition().y));
-						if (current.getTexture() == cloud.getTexture())
-							Mouse::setPosition(Vector2i(Mouse::getPosition().x + 50, Mouse::getPosition().y + 12));
+						if (!menu.getGlobalBounds().contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y)) {
 
+							Mouse::setPosition(Vector2i(Mouse::getPosition().x + 20, Mouse::getPosition().y));
+							if (current.getTexture() == tree.getTexture())
+								Mouse::setPosition(Vector2i(Mouse::getPosition().x + 40, Mouse::getPosition().y));
+							if (current.getTexture() == cloud.getTexture())
+								Mouse::setPosition(Vector2i(Mouse::getPosition().x + 50, Mouse::getPosition().y + 12));
+						}
 					}
+					
 					
 					
 				}
 			} 
 		
-
+			dot.setPosition(Mouse::getPosition(window).x, Mouse::getPosition(window).y);
 		}
 		ostringstream num;
 		num << level.size();
@@ -307,6 +321,7 @@ int main()
 		window.draw(numofobjs);
 		if (cl_str)window.draw(close);
 		if (save)window.draw(saving);
+		window.draw(dot);
 		window.display();
 		
 	}
