@@ -13,7 +13,8 @@ using namespace std;
 int main()
 {
 	
-
+	RectangleShape current_top;
+	current_top.setFillColor(Color::Color(255,255,255,50));
 	Text objname;
 	Text numofobjs;
 	Text saving;
@@ -297,6 +298,8 @@ int main()
 			} 
 		
 			dot.setPosition(Mouse::getPosition(window).x, Mouse::getPosition(window).y);
+			current_top.setPosition(current.getPosition()); 
+			current_top.setSize(Vector2f(current.getTextureRect().width,current.getTextureRect().height));
 		}
 		ostringstream num;
 		num << level.size();
@@ -316,6 +319,7 @@ int main()
 		bhouse.draw(window);
 		bsun.draw(window);
 		window.draw(current);
+		window.draw(current_top);
 		window.draw(info);
 		window.draw(objname);
 		window.draw(numofobjs);
