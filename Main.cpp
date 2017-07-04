@@ -7,8 +7,11 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
+#include <set>
 
 using namespace std;
+
+
 
 int main()
 {
@@ -140,27 +143,28 @@ int main()
 			if(event.type == Event::MouseWheelMoved)
 			{
 					current.rotate(event.mouseWheel.delta);
+					current_top.rotate(event.mouseWheel.delta);
 			}
 			if (event.type == Event::Closed) 
 			{ 
 				if (cl_str)window.close();
 				cl_str = true;
 			}
-			if(event.type == Event::KeyPressed)
+			if (event.type == Event::KeyPressed)
 			{
-				
+
 				if (event.key.control) {
 
-					if(event.key.code == Keyboard::S)
+					if (event.key.code == Keyboard::S)
 					{
-						
+
 						save = true;
 						for (int i = 0; i < level.size(); i++)
 						{
 							if (level[i].getTexture() == tree.getTexture())file << 1 << endl;
 							else if (level[i].getTexture() == house.getTexture())file << 2 << endl;
 							else if (level[i].getTexture() == road.getTexture())file << 3 << endl;
-							else if (level[i].getTexture() == earth.getTexture())file << 4 << endl; 
+							else if (level[i].getTexture() == earth.getTexture())file << 4 << endl;
 							else if (level[i].getTexture() == grass.getTexture())file << 5 << endl;
 							else if (level[i].getTexture() == pyramid.getTexture())file << 6 << endl;
 							else if (level[i].getTexture() == sun.getTexture())file << 7 << endl;
@@ -170,33 +174,41 @@ int main()
 
 							file << level[i].getPosition().x << endl << level[i].getPosition().y << endl;
 							file << level[i].getRotation() << endl;
-							
-						
+
+
 						}
 						file.close();
 					}
 					if (event.key.code == Keyboard::Z && level.size() > 0)
 					{
 						deleted.push_back(level[level.size() - 1]);
-						level.pop_back(); 
+						level.pop_back();
 					}
 					else if (event.key.code == Keyboard::N && deleted.size() > 0)
 					{
-						level.push_back(deleted[deleted.size() - 1]); 
+						level.push_back(deleted[deleted.size() - 1]);
 						deleted.pop_back();
 					}
 					else if (event.key.code == Keyboard::C)
 					{
-						while(level.size() != 0)
-						for(int i = 0; i < level.size(); i++)
-						{
-							deleted.push_back(level[level.size() - 1]);
-							level.pop_back();
-						}
+						while (level.size() != 0)
+							for (int i = 0; i < level.size(); i++)
+							{
+								deleted.push_back(level[level.size() - 1]); 
+								level.pop_back();
+							}
 					}
 				}
-				if (event.key.code == Keyboard::Left)current.rotate(-0.5f);
-				else if (event.key.code == Keyboard::Right)current.rotate(0.5f);
+				if (event.key.code == Keyboard::Left) 
+				{
+					current.rotate(-0.5f);
+					current_top.rotate(-0.5f);
+				}
+				else if (event.key.code == Keyboard::Right)
+				{
+					current.rotate(0.5f);
+					current_top.rotate(-0.5f);
+			    }
 				 
 				if(event.key.code == Keyboard::Space) 
 				{
